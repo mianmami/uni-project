@@ -61,7 +61,7 @@
     "devServer": {
       "proxy": {
         "/prefix": {
-          "target": "https://www.uinav.com",
+          "target": "https://api-hmugo-web.itheima.net",
           "pathRewrite": {
             "^/prefix": ""
           }

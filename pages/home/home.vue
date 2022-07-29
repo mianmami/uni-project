@@ -3,7 +3,7 @@
     <!-- 轮播图区域-->
     <swiper circular indicator-dots autoplay :interval="3000" :duration="1000">
       <swiper-item v-for="(item) in swiperList" :key="item.goods_id">
-        <navigator class='swiper-item'>
+        <navigator class='swiper-item' :url="'/subpkg/goods_detail/goods_detail?goods_id='+item.goods_id">
           <image :src="item.image_src"></image>
         </navigator>
       </swiper-item>
@@ -11,7 +11,7 @@
 
     <!-- 分类导航区域-->
     <view class='nav-list'>
-      <view v-for="(item) in navList" :key="item.image_src">
+      <view v-for="(item) in navList" :key="item.image_src" @click="navClickHandler(item)">
         <image :src="item.image_src"></image>
       </view>
     </view>
@@ -24,14 +24,15 @@
         <!-- 内容-->
         <view class='floor-image-box'>
           <view class="left-img-box">
-            <navigator>
+            <navigator :url="item.product_list[0].url">
               <image :src='item.product_list[0].image_src' :style="{width: item.product_list[0].image_width+'rpx'}"
                 mode='widthFix'>
               </image>
             </navigator>
           </view>
           <view class="right-img-box">
-            <navigator class="right-img-item" v-for="(item2,idx2) in item.product_list" :key="idx2" v-if="idx2 !== 0">
+            <navigator class="right-img-item" v-for="(item2,idx2) in item.product_list" :key="idx2" v-if="idx2 !== 0"
+              :url="item2.url">
               <image :src="item2.image_src" :style="{width: item2.image_width + 'rpx'}" mode="widthFix"></image>
             </navigator>
           </view>
@@ -77,8 +78,19 @@
         } = await uni.$http.get('http://192.168.199.150:8080/prefix/api/public/v1/home/floordata')
         // await uni.$http.get('https://www.uinav.com/api/public/v1/home/floordata')
         if (res.meta.status !== 200) return uni.$showMsg()
-
+        res.message.forEach(floor => {
+          floor.product_list.forEach(prod => {
+            prod.url = `/subpkg/goods_list/goods_list?${prod.navigator_url.split('?')[1]}`
+          })
+        })
         this.floorList = res.message
+      },
+      navClickHandler(item) {
+        if (item.name == "分类") {
+          uni.switchTab({
+            url: '/pages/cate/cate'
+          })
+        }
       }
 
     },
